@@ -1,0 +1,89 @@
+<!--
+  ~ Copyright (c) 2002-2011 "Neo Technology,"
+  ~ Network Engine for Objects in Lund AB [http://neotechnology.com]
+  ~
+  ~ This file is part of Neo4j.
+  ~
+  ~ Neo4j is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<html>
+<body>
+    <h1>Applet test</h1>
+    <script src="http://www.java.com/js/deployJava.js"></script>
+    <script>
+        var attributes = { id:'neo4j', code:'org.neo4j.jdbc.applet.Neo4jApplet',  width:1, height:1} ;
+        var parameters = {jnlp_href: 'neo4j-applet.jnlp',url:'jdbc:neo4j://localhost:7474/'} ;
+        deployJava.runApplet(attributes, parameters, '1.6');
+    </script>
+
+    <script language="javascript">
+
+        function sendQuery()
+        {
+            var neo = document.getElementById("neo4j")
+
+            var q = document.getElementById("query").value
+            try
+            {
+                var res = neo.query(q)
+                var meta = res.getMetaData()
+
+                var tab=document.createElement('table');
+                tab.setAttribute('id','newtable');
+                tab.setAttribute('border','1');
+
+                var tbo=document.createElement('tbody');
+                tab.appendChild(tbo);
+
+                var header = document.createElement('tr')
+                var count = meta.getColumnCount();
+
+                for(k=0;k<count;k++)
+                {
+                    cell = document.createElement('th');
+                    cell.appendChild(document.createTextNode(meta.getColumnLabel(k+1)));
+                    header.appendChild(cell);
+                }
+                tbo.appendChild(header);
+
+                while (res.next())
+                {
+                    var row = document.createElement('tr')
+                    for(k=0;k<count;k++)
+                    {
+                        cell = document.createElement('td');
+                        cell.appendChild(document.createTextNode(res.getString(k+1)));
+                        row.appendChild(cell);
+                    }
+                    tbo.appendChild(row);
+                }
+
+                document.getElementById('result').innerHTML="";
+                document.getElementById('result').appendChild(tab);
+            } catch(ex)
+            {
+              alert("Error:"+ex)
+            }
+        }
+    </script>
+
+    <form action="#" onsubmit="sendQuery();return false">
+        <textarea id="query" rows="10" cols="80">start n=node(0) match (n)-[:TYPE]->(type)<-[:IS_A]-(instance) where type.type='Person' return instance.Firstname</textarea><br/>
+        <input value="Query" type="submit"/>
+    </form>
+
+    Result:
+    <div id="result"></div>
+</body>
+</html>
