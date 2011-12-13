@@ -1,0 +1,126 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.neo4j</groupId>
+    <artifactId>neo4j-jdbc-web</artifactId>
+    <version>1.6-SNAPSHOT</version>
+    <name>Neo4j JDBC Applet webapp</name>
+    <description>Neo4j JDBC Applet webapp</description>
+    <url>http://components.neo4j.org/${project.artifactId}/${project.version}</url>
+
+    <properties>
+        <neo4j.version>1.6-SNAPSHOT</neo4j.version>
+        <short-name>neo4j-jdbc-web</short-name>
+        <license-text.header>GPL-3-header.txt</license-text.header>
+    </properties>
+
+    <packaging>war</packaging>
+
+    <!--
+      <scm>
+        <connection>scm:git:git://github.com/neo4j/cypher-dsl.git</connection>
+        <developerConnection>scm:git:git@github.com:neo4j/cypher-dsl.git</developerConnection>
+        <url>https://github.com/neo4j/cypher-dsl</url>
+      </scm>
+    -->
+
+    <licenses>
+        <license>
+            <name>GNU General Public License, Version 3</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0-standalone.html</url>
+            <comments>The software ("Software") developed and owned by Network Engine for
+                Objects in Lund AB (referred to in this notice as "Neo Technology") is
+                licensed under the GNU GENERAL PUBLIC LICENSE Version 3 to all third
+                parties and that license is included below.
+
+                However, if you have executed an End User Software License and Services
+                Agreement or an OEM Software License and Support Services Agreement, or
+                another commercial license agreement with Neo Technology or one of its
+                affiliates (each, a "Commercial Agreement"), the terms of the license in
+                such Commercial Agreement will supersede the GNU GENERAL PUBLIC LICENSE
+                Version 3 and you may use the Software solely pursuant to the terms of
+                the relevant Commercial Agreement.
+            </comments>
+        </license>
+    </licenses>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.4</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Xmx300m</argLine>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>test</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>neo4j-jdbc-applet</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <version>6.1.10</version>
+                <configuration>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <stopKey>foo</stopKey>
+                    <stopPort>9999</stopPort>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-jetty</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <scanIntervalSeconds>0</scanIntervalSeconds>
+                            <daemon>true</daemon>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-jetty</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
