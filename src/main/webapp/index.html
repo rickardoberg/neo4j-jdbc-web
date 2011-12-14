@@ -29,11 +29,22 @@
 
     <script language="javascript">
 
-        function sendQuery()
+        function connect(url)
+        {
+            alert(url);
+
+            var neo = document.getElementById("neo4j")
+            alert(neo);
+            neo.setUrl(url);
+            return false;
+        }
+
+        function sendQuery(q)
         {
             var neo = document.getElementById("neo4j")
 
-            var q = document.getElementById("query").value
+            alert(q);
+
             try
             {
                 var res = neo.query(q)
@@ -75,12 +86,20 @@
             {
               alert("Error:"+ex)
             }
+
+            return false;
         }
     </script>
 
-    <form action="#" onsubmit="sendQuery();return false">
+    <form action="#" onsubmit="return connect(this.url.value)">
+        URL:<input id="url" name="url" value="jdbc:neo4j://localhost:7474/" type="text" size="50"/> <input value="Connect" type="submit" />
+    </form>
+
+    <hr/>
+
+    <form action="#" onsubmit="return sendQuery(this.query.value)">
         <textarea id="query" rows="10" cols="80">start n=node(0) match (n)-[:TYPE]->(type)<-[:IS_A]-(instance) where type.type='Person' return instance.Firstname</textarea><br/>
-        <input value="Query" type="submit"/>
+        <input value="Query" type="submit" />
     </form>
 
     Result:
